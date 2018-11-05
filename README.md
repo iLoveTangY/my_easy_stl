@@ -5,7 +5,7 @@
 [迭代器](./iterators/README.md)
 [序列式容器](./sequence_containers/README.md)
 [关联式容器](./asso_containers/README.md)
-[算法(algorithm)](./algorithm/README.md)  
+[算法(algorithm)](./algorithm/README.md)
 [函数对象](./func_objects/README.md)
 [配接器](./adapters/README.md)
 每一部分都包含以下三小部分：

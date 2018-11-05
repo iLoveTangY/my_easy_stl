@@ -3,4 +3,6 @@ project(easy_stl)
 
 set(CMAKE_CXX_STANDARD 11)
 
+include_directories(test)
+
 add_executable(easy_stl main.cpp)
