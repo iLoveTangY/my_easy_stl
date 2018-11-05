@@ -5,4 +5,4 @@ set(CMAKE_CXX_STANDARD 11)
 
 include_directories(test)
 
-add_executable(easy_stl main.cpp)
+add_executable(easy_stl main.cpp test/test_allocator.cpp)
