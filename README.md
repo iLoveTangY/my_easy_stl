@@ -1,5 +1,5 @@
 # My_Easy_STL
-是在度过 [《STL源码剖析》](https://book.douban.com/subject/1110934/) 一书之后利用C++11自己实现的一个简单的STL。
+是在读过 [《STL源码剖析》](https://book.douban.com/subject/1110934/) 一书之后利用C++11自己实现的一个简单的STL。
 # 七大部分
 
 [空间配置器](./allocator/README.md)  
@@ -12,7 +12,7 @@
 每一部分都包含以下三小部分：  
 
 * 读书笔记：《STL源码剖析》这本书中*我认为*值得记录的一些内容
-* 实现细节：在自己实现该部分的STL库时的流程
+* 实现细节：在自己实现该部分的STL库时的流程以及一些细节
 * 遇到的问题：实现过程中遇到的一些问题以及解决方案
 # 单元测试
 使用[Catch2](https://github.com/catchorg/Catch2)这个开源的单元测试框架。感谢作者大大！
