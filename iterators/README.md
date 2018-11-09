@@ -80,7 +80,7 @@ typename iterator_traits<I>::value_type
 func(I ite)
 { return *ite; }
 ```
-#### 迭代器的五种相应型别
+### 迭代器的五种相应型别
 * `value_type`：如上节所述；
 * `difference type`：`difference type`用来表示两个迭代器之间的举例，因此也可以用来表示一个容器的最大容量，因为对于连续空间的容器而言
 头尾之间的距离就是最大容量。对于指针类型，我们用内建的`ptrdiff_t`来表示`difference`；
