@@ -65,7 +65,7 @@ Q: *free-list* 采用的union形式结构中定义的`char client[1]`的作用�
 
 A: \TODO
 
-Q: 但是还存在一点疑惑，在内存池剩余空间不足时，计算应该分配的空间大小为什么是`size_t bytes_to_get = 2 * total_bytes + ROUND_UP(heap_size >> 4);`？
+Q: 在内存池剩余空间不足时，计算应该分配的空间大小为什么是`size_t bytes_to_get = 2 * total_bytes + ROUND_UP(heap_size >> 4);`？
 
 A: 新的内存量的大小为需求量的两倍，再加上一个随着配置次数增加越来越大的附加量。
 
