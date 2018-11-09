@@ -7,6 +7,7 @@
 
 #include <new>      /* std::bad_alloc */
 #include <cstdlib>  /* malloc() free() */
+#include <cstddef>
 
 namespace easy_stl
 {
@@ -99,6 +100,41 @@ namespace easy_stl
         static char* start_free;    // 内存池起始位置，只在chunk_alloc中改变
         static char* end_free;      // 内存池结束位置，只在chunk_alloc中改变
         static std::size_t heap_size;   // 重新给内存池分配内存时的一个附加量，会越来越大
+    };
+
+    /* 为了满足STL的接口要求，在我们实现的配置器外面再做一层封装 */
+    template <typename T, class Alloc>
+    class simple_alloc
+    {
+    public:
+        typedef T           value_type;
+        typedef T*          pointer;
+        typedef const T*    const_pointer;
+        typedef T&          reference;
+        typedef const T&    const_reference;
+        typedef std::size_t size_type;
+        typedef ptrdiff_t   difference_type;
+
+        static T* allocate(std::size_t n)
+        {
+            return 0 == n ? nullptr : (T*)Alloc::allocate(n* sizeof(T));
+        }
+
+        static T* allocate()
+        {
+            return (T*)Alloc::allocate(sizeof(T));
+        }
+
+        static void deallocate(T* p, std::size_t n)
+        {
+            if (0 != n)
+                Alloc::deallocate(p, n * sizeof(T));
+        }
+
+        static void deallocate(T* p)
+        {
+            Alloc::deallocate(p, sizeof(T));
+        }
     };
 }
 

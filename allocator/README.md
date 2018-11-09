@@ -5,7 +5,7 @@
 ## 读书笔记
 ### 空间配置器的标准接口
 
-​&emsp; &emsp; 根据 STL 的规范，`allocator` 必须要实现十几二十个必要接口。具体接口见书。SGI STL 使用了一个专属的、拥有次配置能力的、效率优越的特殊配置器。但是 SGI STL仍然提供了一个标准的配置器接口，只是把它做了一层封装。
+&emsp; &emsp; 根据 STL 的规范，`allocator` 必须要实现十几二十个必要接口。具体接口见书。SGI STL 使用了一个专属的、拥有次配置能力的、效率优越的特殊配置器。但是 SGI STL仍然提供了一个标准的配置器接口，只是把它做了一层封装。
 
 ### SGI 空间配置器
 
@@ -50,7 +50,11 @@ union obj
 
 为了节省空间，*free-lists* 使用`union`的形式。可以这么理解这个`union`：`obj`实际上是一大块内存（大小跟它所处的链表位置有关），里面只有四个字节（一个指针大小）用来存储链表下一个元素的位置，其余的部分都是空闲的；也就是说如果我们定义变量`obj* result`，假设`result`已经分配了足够的内存，那么执行`(void*)result`之后，`result`就指向我们实际需要的那个内存块了。
 
-​&emsp; &emsp; 在`allocate()`中当 *free-list* 没有足够的空间时，会调用`refill()`来为 *free-list* 重新增加空间。为了增加效率，在`refill()`中又会调用`chunk_alloc()`来一次分配多个需要的空间（默认为20个）。在`chunk_alloc()`中，如果内存池的可用空间不足，则会调用`malloc()`来给内存池增加空间。如果`malloc()`也分配不了足够的空间，则尝试调用第一级配置器，因为第一级配置器中有内存不够时的处理机制，可能能够处理这种情况。但是一旦`malloc()`分配到了足够的空间，则`chunk_alloc()`会递归调用自己来重新尝试从内存池中分配空间给 *free-list*，同时修正`nobjs`。
+&emsp; &emsp; 在`allocate()`中当 *free-list* 没有足够的空间时，会调用`refill()`来为 *free-list* 重新增加空间。为了增加效率，在`refill()`中又会调用`chunk_alloc()`来一次分配多个需要的空间（默认为20个）。在`chunk_alloc()`中，如果内存池的可用空间不足，则会调用`malloc()`来给内存池增加空间。如果`malloc()`也分配不了足够的空间，则尝试调用第一级配置器，因为第一级配置器中有内存不够时的处理机制，可能能够处理这种情况。但是一旦`malloc()`分配到了足够的空间，则`chunk_alloc()`会递归调用自己来重新尝试从内存池中分配空间给 *free-list*，同时修正`nobjs`。
+
+### 内存处理基本工具
+
+&emsp; &emsp; STL 中共有5个全局函数，作用于未初始化的空间上（就是已经通过`allocate`分配了内存但是还没有通过`construct`构造对象）。前两个就是前面提到的`construct`和`destroy`，还有另外三个分别是`uninitialized_copy()`、`uninitialized_fill()`、`uninitialized_fill_n()`，分别对应于高层函数`copy()`、`fill()`、`fill_n()`。注意，这几个函数接收的都是`ForwardIterator`，都是迭代器。只有这样才能萃取出迭代器的`value_type`等等，才能达到效率的最大化。
 
 ## 实现细节
 
@@ -58,7 +62,7 @@ union obj
 
 ​&emsp; &emsp; SGI STL 的`<stl_alloc.h>`要考虑多线程状态，我们在实现时不考虑多线程。
 
-​&emsp; &emsp; 在实现中我们经常利用`malloc`的返回值和`nullptr`比较，这是允许的，因为`nullptr`完全兼容`0`或者是`NULL`。
+&emsp; &emsp; 在实现中我们经常利用`malloc`的返回值和`nullptr`比较，这是允许的，因为`nullptr`完全兼容`0`或者是`NULL`。
 
 ## 遇到的问题
 Q: *free-list* 采用的union形式结构中定义的`char client[1]`的作用是什么？
@@ -67,7 +71,7 @@ A: \TODO
 
 Q: 在内存池剩余空间不足时，计算应该分配的空间大小为什么是`size_t bytes_to_get = 2 * total_bytes + ROUND_UP(heap_size >> 4);`？
 
-A: 新的内存量的大小为需求量的两倍，再加上一个随着配置次数增加越来越大的附加量。
+A: 新的内存量的大小为需求量的两倍，再加上一个随着配置次数增加越来越大的附加量，这样能减少分配的次数。
 
 ## 参考资料
 
