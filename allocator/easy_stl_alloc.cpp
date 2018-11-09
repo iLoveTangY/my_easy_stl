@@ -110,7 +110,8 @@ namespace easy_stl
             {
                 current_obj->next = nullptr;
                 break;
-            } else
+            }
+            else
                 current_obj->next = next_obj;
         }
         return result;
@@ -127,14 +128,16 @@ namespace easy_stl
             result = start_free;
             start_free += total_bytes;
             return result;
-        } else if (bytes_left >= size)    // 剩余空间不能满足需求，但是还够供应一个以上的区块，这种情况下就会发生nobjs不为20
+        }
+        else if (bytes_left >= size)    // 剩余空间不能满足需求，但是还够供应一个以上的区块，这种情况下就会发生nobjs不为20
         {
             nobjs = bytes_left / size;
             total_bytes = size * nobjs;
             result = start_free;
             start_free += total_bytes;
             return result;  // 有多少返回多少
-        } else    // 内存池中连一个区块都无法满足，则需要重新分配内存给内存池
+        }
+        else    // 内存池中连一个区块都无法满足，则需要重新分配内存给内存池
         {
             size_t bytes_to_get = 2 * total_bytes + ROUND_UP(heap_size >> 4);
             // 如果内存池里面还有剩余空间，将它编入合适的free-list
