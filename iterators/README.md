@@ -84,8 +84,32 @@ func(I ite)
 * `value_type`：如上节所述；
 * `difference type`：`difference type`用来表示两个迭代器之间的举例，因此也可以用来表示一个容器的最大容量，因为对于连续空间的容器而言
 头尾之间的距离就是最大容量。对于指针类型，我们用内建的`ptrdiff_t`来表示`difference`；
-* `reference type`
-* `pointer type`
-* `iterator_category`
+* `reference type`：在C++中，如果函数要传回左值，都是以 *pass by reference* 的方式进行的，所以当`p`是个 *mutable iterators* 时，
+如果其`value_type`是`T`，那么`*p`的型别不应该是`T`，而应该是`T&`；同理，如果`p`是个 *const iterator*，那么`*p`的型别应该是`const T&`。
+这里所讨论的`*p`的型别就是所谓的`reference type`；
+* `pointer type`：同`reference type`类似，我们能够传回一个指针，指向迭代器所指之物，如果`p`是个 *mutable iteartor*，那么`T*`即为`pointer type`；
+* `iterator_category`：
+    * `Input Iterator`：只读，且只支持`operator++`；
+    * `Ouput Iterator`：只写，且只支持`operator++`；
+    * `Forward Iterator`：允许写入型算法在此种迭代器形成的区间上进行**读写**操作，且只支持`operator++`；
+    * `Bidirectional Iterator`：可双向移动，可读写，支持`operator++`和`operator--`；
+    * `Random Access Iterator`：可读写，可随机访问，支持`operator++`、`operator--`、`p+n`、`p-n`、`p[n]`、`p1-p2`、`p1<p2`。
+    为了让 STL 中的算法实现的更有效率，需要针对不同的迭代器型别做不同的操作。
+### SGI STL 的私房菜：__type_traits
+&emsp; &emsp; 这是 SGI STL 内部所使用的东西，不在 STL 规范之内。`iterator_traits`负责萃取迭代器的特性，`__type_traits`负责萃取型别（*type*）的特性。
+此处所关注的型别特性主要是指：这个型别是否具备 *non-trivial default ctor*？是否具备 *non-trivial copy ctor*？
+是否具备 *non-trivial assignment operator*？是否具备 *non-trivial dtor*？如果答案是否定的，那么我们在对这个型别进行构造、析构、拷贝、赋值等操作时，
+就可以采用最有效率的做法（例如根本不调用身居高位、不谋实事的 *constructor*、*destructor*）,而直接采用内存处理操作如`malloc()`、`memcpy()`等等，获得最高效率。
+同样，也实现五种型别：
+* `has_trivial_default_constructor`
+* `has_trivial_copy_constructor`
+* `has_trivial_assignment_operator`
+* `has_trivial_destructor`
+* `is_POD_type`
 ## 实现细节
+&emsp; &emsp; 在实现`__type_traits`时，SGI 首先把所有内嵌型别都定义成`__false_type`，然后在对每一个内建类型做特化。因此，
+如果你想要指定自己定义的某个类型有上面所述的五种型别，就要针对自定义类型对`__type_traits`做特化。
 ## 遇到的问题
+Q：为什么在`iterator_traits`中实现`value_type()`时返回值为一个指针类型？
+
+A：\TODO
