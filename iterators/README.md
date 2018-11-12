@@ -113,3 +113,6 @@ func(I ite)
 Q：为什么在`iterator_traits`中实现`value_type()`时返回值为一个指针类型？
 
 A：\TODO
+
+## 参考资料
+* [POD 型别](https://blog.csdn.net/aqtata/article/details/35618709)
