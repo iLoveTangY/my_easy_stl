@@ -9,6 +9,7 @@ STL 另外提供了`vector`、`list`、`deque`、`stack`、`queue`、`priority_q
 ## 实现细节
 ### `vector`
 &emsp; &emsp; `vector`中注意`copy()`和`copy_backward()`的使用。`vector`支持的所有操作如下：
+
 名称|描述
 :-:|:-:
 `begin()` |返回容器元素开始位置的迭代器
