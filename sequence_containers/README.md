@@ -21,11 +21,14 @@ STL 另外提供了`vector`、`list`、`deque`、`stack`、`queue`、`priority_q
 `vector()`|构造函数
 `vector(n, value)`|在容器中加入`n`个值为`value`的元素
 `vector(n)`|在容器中加入`n`个元素，利用该值的默认构造函数构造
+`insert(position, n, x)`|从`position`处开始插入`n`个值为`x`的元素
+`insert(position, x)`|在`position`处插入元素`x`
 `front()`|返回容器中第一个元素
 `back()`|返回容器中最后一个元素
 `push_back(x)`|在容器的最后一个元素之后插入元素`x`
 `pop_back()`|弹出容器中最后一个元素
 `erase(position)`|删除指定位置上的元素
+`erase(first, last)`|删除从`[first, last)`的所有元素
 `resize(new_size, x)`|将容器的`size`设置为`new_size`，多出来的元素用`x`填充
 `resize(new_size)`|将容器的`size`设置为`new_size`，多出来的元素用默认构造函数构造的值填充
 `clear()`|清除所有元素
