@@ -35,7 +35,7 @@ namespace easy_stl
     }
 
     template<typename ForwardIterator>
-    inline void __destroy_aux(ForwardIterator first, ForwardIterator last, __true_type)
+    inline void __destroy_aux(ForwardIterator, ForwardIterator, __true_type)
     {
     }
 
