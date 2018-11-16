@@ -1,102 +1,27 @@
 #define CATCH_CONFIG_MAIN
 
-#include "test/catch.hpp"
-#include <vector>
+#include "catch.hpp"
+#include "VectorTest.h"
 
-//unsigned int Factorial(unsigned int number)
-//{
-//    return number > 1 ? Factorial(number - 1) * number : 1;
-//}
-//
-//TEST_CASE("Factorials are computed", "[factorial]")
-//{
-//    REQUIRE(Factorial(0) == 1);
-//    REQUIRE(Factorial(1) == 1);
-//    REQUIRE(Factorial(2) == 2);
-//    REQUIRE(Factorial(3) == 6);
-//}
-//
-//TEST_CASE("vectors can be sized and resized", "[vector]")
-//{
-//    std::vector<int> v(5);
-//
-//    REQUIRE(v.size() == 5);
-//    REQUIRE(v.capacity() >= 5);
-//
-//    SECTION("resizing bigger changes size and capacity")
-//    {
-//        v.resize(10);
-//
-//        REQUIRE(v.size() == 10);
-//        REQUIRE(v.capacity() >= 10);
-//    }
-//
-//    SECTION("resizing smaller changes size but not capacity")
-//    {
-//        v.resize(0);
-//
-//        REQUIRE(v.empty());
-//        REQUIRE(v.capacity() >= 5);
-//    }
-//
-//    SECTION("reserving bigger changes capacity but not size")
-//    {
-//        v.reserve(10);
-//
-//        REQUIRE(v.size() == 5);
-//        REQUIRE(v.capacity() >= 10);
-//    }
-//}
-
-SCENARIO("vectors can be sized and resized", "[vector]")
+SCENARIO("Vector Test", "[Vector]")
 {
-
-    GIVEN("A vector with some items")
-    {
-        std::vector<int> v(5);
-
-        REQUIRE(v.size() == 5);
-        REQUIRE(v.capacity() >= 5);
-
-        WHEN("the size is increased")
-        {
-            v.resize(10);
-
-            THEN("the size and capacity change")
-            {
-                REQUIRE(v.size() == 10);
-                REQUIRE(v.capacity() >= 10);
-            }
-        }
-        WHEN("the size is reduced")
-        {
-            v.resize(0);
-
-            THEN("the size changes but not capacity")
-            {
-                REQUIRE(v.empty());
-                REQUIRE(v.capacity() >= 5);
-            }
-        }
-        WHEN("more capacity is reserved")
-        {
-            v.reserve(10);
-
-            THEN("the capacity changes but not the size")
-            {
-                REQUIRE(v.size() == 5);
-                REQUIRE(v.capacity() >= 10);
-            }
-        }
-        WHEN("less capacity is reserved")
-        {
-            v.reserve(0);
-
-            THEN("neither size nor capacity are changed")
-            {
-                REQUIRE(v.size() == 5);
-                REQUIRE(v.capacity() >= 5);
-            }
-        }
-    }
+//    VectorTest::test_initialize();
+//    VectorTest::test_begin();
+//    VectorTest::test_end();
+//    VectorTest::test_initialize();
+//    VectorTest::test_begin();
+//    VectorTest::test_end();
+//    VectorTest::test_size();
+//    VectorTest::test_capacity();
+//    VectorTest::test_empty();
+//    VectorTest::test_operator_index();
+//    VectorTest::test_insert();
+//    VectorTest::test_front();
+//    VectorTest::test_back();
+//    VectorTest::test_push_back();
+//    VectorTest::test_pop_back();
+//    VectorTest::test_erase();
+//    VectorTest::test_resize();
+//    VectorTest::test_clear();
+    VectorTest::test_all();
 }

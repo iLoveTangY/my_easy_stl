@@ -9,7 +9,6 @@
 #include "easy_stl_alloc.h"
 #include "easy_stl_uninitialized.h"
 #include <algorithm>    // TODO 替换成自己实现的copy()
-#include <ole.h>
 
 namespace easy_stl
 {
@@ -56,12 +55,12 @@ namespace easy_stl
         }
 
         /* 主要的功能函数 */
-        iterator begin()
+        iterator begin() const
         {
             return start;
         }
 
-        iterator end()
+        iterator end() const
         {
             return finish;
         }
@@ -76,7 +75,7 @@ namespace easy_stl
             return size_type(end_of_storage - begin());
         }
 
-        bool empty()
+        bool empty() const
         {
             return begin() == end();
         }
@@ -87,16 +86,22 @@ namespace easy_stl
         }
 
         void insert(iterator position, size_type n, const T &x);
-        void insert(iterator position, const T &x);
 
-        reference front()
+        void insert(iterator position, const T &x)
+        {
+            insert_aux(position, x);
+        }
+
+        reference front() const
         {
             return *begin();
         }
-        reference back()
+
+        reference back() const
         {
-            return *(end()-1);
+            return *(end() - 1);
         }
+
         void push_back(const T &x)
         {
             if (finish != end_of_storage)
@@ -107,35 +112,41 @@ namespace easy_stl
             else
                 insert_aux(end(), x);
         }
+
         void pop_back()
         {
-            if(finish != start)
+            if (finish != start)
             {
                 --finish;
                 destroy(finish);
             }
         }
+
         iterator erase(iterator position)
         {
             // 如果清除的不是最后一个元素，要将后续元素往前移动
-            if (position+1 != end())
-                std::copy(position+1, finish, position);    // TODO 替换
+            if (position + 1 != end())
+                std::copy(position + 1, finish, position);    // TODO 替换
             --finish;
             destroy(finish);
             return position;
         }
+
         iterator erase(iterator first, iterator last);
+
         void resize(size_type new_size, const T &x)
         {
             if (new_size < size())
-                erase(begin()+new_size, end());
+                erase(begin() + new_size, end());
             else
-                insert(end(), new_size-size(), x);
+                insert(end(), new_size - size(), x);
         }
+
         void resize(size_type new_size)
         {
             resize(new_size, T());
         }
+
         void clear()
         {
             erase(begin(), end());
@@ -168,9 +179,9 @@ namespace easy_stl
         iterator allocate_and_fill(size_type n, const T &x);
     };
 
-    template <typename T, typename Alloc>
+    template<typename T, typename Alloc>
     void Vector<T, Alloc>::insert(easy_stl::Vector<T, Alloc>::iterator position,
-                                                                 unsigned int n, const T &x)
+                                  unsigned int n, const T &x)
     {
         if (n != 0)
         {
@@ -181,14 +192,15 @@ namespace easy_stl
                 const size_type elems_after = finish - position;    // 插入点之后的元素个数
                 if (elems_after > n)    // 如果插入点之后的元素个数大于新增元素个数，则需要从后往前拷贝
                 {
-                    uninitialized_copy(finish-n, finish, finish);   // 往最后需要新增的n块“未初始化”的空间上拷贝适当的值
-                    std::copy_backward(position, finish-n, finish); // 从finish开始往前填充position后，finish-n之前（没有拷贝到未初始化的空间上）的那些值
-                    std::fill(position, position+n, x); // 从插入点开始填新值
+                    uninitialized_copy(finish - n, finish, finish);   // 往最后需要新增的n块“未初始化”的空间上拷贝适当的值
+                    std::copy_backward(position, finish - n,
+                                       finish); // 从finish开始往前填充position后，finish-n之前（没有拷贝到未初始化的空间上）的那些值
+                    std::fill(position, position + n, x); // 从插入点开始填新值
                     finish += n;
                 }
                 else    // 插入点之后的元素个数小于新增元素个数，可以直接从前往后
                 {
-                    uninitialized_fill_n(finish, n-elems_after, x); // 新增空间的n-elems_after个元素一定要填x
+                    uninitialized_fill_n(finish, n - elems_after, x); // 新增空间的n-elems_after个元素一定要填x
                     finish += n - elems_after;
                     uninitialized_copy(position, old_finish, finish);   // 将position后面的所有elems_after个元素拷贝到尾部
                     finish += elems_after;
@@ -239,12 +251,20 @@ namespace easy_stl
     template<typename T, typename Alloc>
     void Vector<T, Alloc>::insert_aux(Vector::iterator position, const T &x)
     {
-        if (finish != end_of_storage)   // 还有备用空间
+        if (finish != end_of_storage)   // 还有备用空间，因位此函数会被insert(position, x)直接调用，所以需要作此判断
         {
-            construct(finish, *(finish-1));
-            ++finish;
-            std::copy_backward(position, finish-2, finish-1);
-            *position = x;
+            if (finish == position)
+            {
+                construct(finish, x);
+                ++finish;
+            }
+            else
+            {
+                construct(finish, *(finish - 1));
+                ++finish;
+                std::copy_backward(position, finish - 2, finish - 1);
+                *position = x;
+            }
         }
         else
         {
@@ -273,6 +293,7 @@ namespace easy_stl
             end_of_storage = new_start + len;
         }
     }
+
     // 配置空间并填满内容
     template<typename T, typename Alloc>
     typename Vector<T, Alloc>::iterator Vector<T, Alloc>::allocate_and_fill(Vector::size_type n, const T &x)
@@ -280,12 +301,6 @@ namespace easy_stl
         iterator result = data_allocator::allocate(n);
         uninitialized_fill_n(result, n, x);
         return result;
-    }
-
-    template<typename T, typename Alloc>
-    void Vector<T, Alloc>::insert(Vector::iterator position, const T &x)
-    {
-        insert_aux(position, x);
     }
 }
 
