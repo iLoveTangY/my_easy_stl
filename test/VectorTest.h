@@ -5,7 +5,7 @@
 #ifndef EASY_STL_VECTORTEST_H
 #define EASY_STL_VECTORTEST_H
 
-#include "easy_stl_vector.h"
+#include "Vector.h"
 #include "catch.hpp"
 
 class VectorTest

@@ -6,6 +6,12 @@ STL 另外提供了`vector`、`list`、`deque`、`stack`、`queue`、`priority_q
 &emsp; &emsp; `vector`的实现关键在于其对大小的控制以及重新配置时的数据移动效率。一旦`vector`旧有空间满载，如果客户端每新增一个元素，
 `vector`内部知识扩充一个元素的空间，实为不智，因为扩充空间（不论多大），是“配置新空间 -> 数据移动 -> 释放旧空间”的大工程，时间成本很高。
 另外，对`vector`的任何操作，一旦引起空间重新配置，指向原`vector`的所有迭代器就都失效了。
+### `list`
+&emsp; &emsp; `list`每次插入或者删除一个元素，就配置或者删除一个元素空间。`list`不能像`vector`一样再使用普通指针作为迭代器，因为其节点不保证在存储空间中连续存在。
+由于STL `list`是一个双向链表，迭代器必须具备前移、后移的能力，所以`list`提供的 **Bidirectional Iterators**。
+
+&emsp; &emsp; 为了符合 STL 的“前闭后开”区间的规范，SGI STL 在`list`的最后一个节点之后加上了一个空白节点。
+在实现`list`时，只要在`list`中保存一个指向这个空白节点的指针即可表示整个双向链表。`list`内部有一个`transfer()`操作，实质上就是将一段链表插到另一个链表中指定的位置之前。
 ## 实现细节
 ### `vector`
 &emsp; &emsp; `vector`中注意`copy()`和`copy_backward()`的使用。`vector`支持的所有操作如下：
@@ -34,3 +40,10 @@ STL 另外提供了`vector`、`list`、`deque`、`stack`、`queue`、`priority_q
 `clear()`|清除所有元素
 
 ## 遇到的问题
+Q: 书上的代码在`Vector`的尾部插入元素时会有 **bug**？
+
+A: 在尾部插入时单独处理。
+
+Q: `list`的后缀`operator++()`为什么返回`const`？
+
+A: 返回常量是为了避免写出`(x++)++`这样的代码，参考[这里](https://stackoverflow.com/questions/52871026/overloaded-operator-returns-a-non-const-and-clang-tidy-complains)。
