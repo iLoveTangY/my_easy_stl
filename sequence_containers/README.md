@@ -13,8 +13,8 @@ STL 另外提供了`vector`、`list`、`deque`、`stack`、`queue`、`priority_q
 &emsp; &emsp; 为了符合 STL 的“前闭后开”区间的规范，SGI STL 在`list`的最后一个节点之后加上了一个空白节点。
 在实现`list`时，只要在`list`中保存一个指向这个空白节点的指针即可表示整个双向链表。`list`内部有一个`transfer()`操作，实质上就是将一段链表插到另一个链表中指定的位置之前。
 ## 实现细节
-### `vector`
-&emsp; &emsp; `vector`中注意`copy()`和`copy_backward()`的使用。`vector`支持的所有操作如下：
+### `Vector`
+&emsp; &emsp; `Vector`中注意`copy()`和`copy_backward()`的使用。`Vector`支持的所有操作如下：
 
 名称|描述
 :-:|:-:
@@ -24,9 +24,9 @@ STL 另外提供了`vector`、`list`、`deque`、`stack`、`queue`、`priority_q
 `capacity()`|容器容量
 `empty()`|容器是否为空
 `operator[]`|下标运算符
-`vector()`|构造函数
-`vector(n, value)`|在容器中加入`n`个值为`value`的元素
-`vector(n)`|在容器中加入`n`个元素，利用该值的默认构造函数构造
+`Vector()`|默认构造函数
+`Vector(n, value)`|构造函数，在容器中加入`n`个值为`value`的元素
+`Vector(n)`|构造函数，在容器中加入`n`个元素，利用该值的默认构造函数构造
 `insert(position, n, x)`|从`position`处开始插入`n`个值为`x`的元素
 `insert(position, x)`|在`position`处插入元素`x`
 `front()`|返回容器中第一个元素
@@ -38,6 +38,33 @@ STL 另外提供了`vector`、`list`、`deque`、`stack`、`queue`、`priority_q
 `resize(new_size, x)`|将容器的`size`设置为`new_size`，多出来的元素用`x`填充
 `resize(new_size)`|将容器的`size`设置为`new_size`，多出来的元素用默认构造函数构造的值填充
 `clear()`|清除所有元素
+### `list`
+&emsp; &emsp; `list`的`size`是通过计算两个迭代器之间的距离算出来的。`list`支持的操作如下：
+
+名称|描述
+:-:|:-:
+`List()`|默认构造函数
+`begin()`|返回指向链表中第一个元素的迭代器
+`end()`|返回指向链表中最后一个元素之后的位置的迭代器
+`empty()`|链表是否为空
+`size()`|返回链表元素个数
+`front()`|返回链表中第一个元素
+`back()`|返回链表中最后一个元素
+`push_front(x)`|在链表的头部插入元素`x`
+`push_back(x)`|在链表的尾部插入元素`x`
+`erase(position)`|删除`position`处的元素
+`insert(position, x)`|在`position`处插入元素`x`
+`pop_front()`|删除链表头部元素
+`pop_back()`|删除链表最后一个元素
+`clear()`|删掉链表所有元素并释放空间
+`remove(value)`|移除链表中所有值为`value`的元素
+`unique()`|删除链表中的连续重复元素，只保留一个
+`splice(position, x)`|将链表`x`插入当前链表的`position`之前
+`splice(position, x, i)`|将`i`所指元素插入到`position`所指位置之前
+`splice(psotion, x, first, last)`|将链表中`[first, last)`所有元素插到`position`所指位置之前
+`merge(x)`|将链表`x`归并到当前链表，要求两个链表都有序
+`reverse()`|逆置链表
+`sort()`|链表排序
 
 ## 遇到的问题
 Q: 书上的代码在`Vector`的尾部插入元素时会有 **bug**？

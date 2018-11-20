@@ -7,6 +7,7 @@
 
 #include <easy_stl_iterator.h>
 #include "easy_stl_alloc.h"
+#include "easy_stl_construct.h"
 
 namespace easy_stl
 {
@@ -108,31 +109,82 @@ namespace easy_stl
         typedef __list_iterator<T, T &, T *> iterator;
         typedef List list;
 
-        List();
+        List()
+        {
+            empty_initialize();
+        }
 
-        iterator begin() const;
+        iterator begin() const
+        {
+            return *(node->next);   // 从 link_type 构造一个iterator
+        }
 
-        iterator end() const;
+        iterator end() const
+        {
+            return node;
+        }
 
-        bool empty() const;
+        bool empty() const
+        {
+            return node->next == node;
+        }
 
-        size_type size() const;
+        size_type size() const
+        {
+            size_type result = 0;
+            result = static_cast<size_type>(distance(begin(), end()));
+            return result;
+        }
 
-        reference front() const;
+        reference front() const
+        {
+            return *begin();
+        }
 
-        reference back() const;
+        reference back() const
+        {
+            return *(--end());
+        }
 
-        void push_front(const T &x);
+        void push_front(const T &x)
+        {
+            insert(begin(), x);
+        }
 
-        void push_back(const T &x);
+        void push_back(const T &x)
+        {
+            insert(end(), x);
+        }
 
-        iterator erase(iterator position);
+        iterator erase(iterator position)
+        {
+            link_type next_node = position.node->next;
+            link_type prev_node = position.node->prev;
+            prev_node->next = next_node;
+            next_node->prev = prev_node;
+            destroy_node(position.node);
+            return next_node;
+        }
 
-        iterator insert(iterator position, const T &x);
+        iterator insert(iterator position, const T &x)
+        {
+            link_type p = create_node(x);
+            p->next = position.node;
+            p->prev = position.node->prev;
+            position.node->prev->next = p;
+            position.node->prev = p;
+        }
 
-        void pop_front();
+        void pop_front()
+        {
+            erase(begin());
+        }
 
-        void pop_back();
+        void pop_back()
+        {
+            iterator tmp = end();
+            erase(--tmp);
+        }
 
         void clear();
 
@@ -155,15 +207,65 @@ namespace easy_stl
 
     private:
         link_type node; // 只要一个指针，即可表示整个双向环状链表
-        void transfer(iterator postion, iterator first, iterator last);
+        void transfer(iterator position, iterator first, iterator last)
+        {
+            if (position != last)
+            {
+                last.node->prev->next = position.node;
+                first.node->prev->next = last.node;
+                position.node->prev->next = first.node;
+                link_type tmp = position.node->prev;
+                position.node->prev = last.node->prev;
+                last.node->prev = first.node->prev;
+                first.node->prev = tmp;
+            }
+        }
 
-        void empty_initialize();
+        void empty_initialize()
+        {
+            node = get_node();
+            node->next = node;
+            node->prev = node;
+        }
 
-        link_type get_node();
-        void put_node(link_type p);
-        link_type create_node(const T &x);
-        void destroy_node(link_type p);
+        // 配置一个节点并返回
+        link_type get_node()
+        {
+            return list_node_allocator::allocate();
+        }
+        // 释放一个节点
+        void put_node(link_type p)
+        {
+            list_node_allocator::deallocate(p);
+        }
+        // 产生（配置并构造）一个节点，带有元素值
+        link_type create_node(const T &x)
+        {
+            link_type p = get_node();
+            construct(&p->data, x);
+            return p;
+        }
+        // 销毁（释放并析构）一个节点
+        void destroy_node(link_type p)
+        {
+            destroy(&p->data);
+            put_node(p);
+        }
     };
+
+    template<typename T, typename Alloc>
+    void List<T, Alloc>::clear()
+    {
+        link_type cur = node->next;
+        while (cur != node)
+        {
+            link_type tmp = cur;
+            cur = cur->next;
+            destroy_node(tmp);
+        }
+        node->next = node;
+        node->prev = node;
+    }
 
 }
 
