@@ -1,6 +1,43 @@
 # Sequence Containers
 &emsp; &emsp; 所谓序列式容器，其中的元素都可序（*ordered*），但未必有序（*sorted*）。C++本身提供了一个序列式容器`array`，
 STL 另外提供了`vector`、`list`、`deque`、`stack`、`queue`、`priority_queue`等，其中`stack`和`queue`是容器适配器。
+## 进度
+### 基本接口(功能)
+- [x] `Vector`
+- [x] `List`
+- [ ] `Deque`
+- [ ] `Stack`
+- [ ] `Queue`
+- [ ] `Heap`
+- [ ] `Priority_Queue`
+- [ ] `Forward_List`
+### 基本单元测试
+- [x] `Vector`
+- [x] `List`
+- [ ] `Deque`
+- [ ] `Stack`
+- [ ] `Queue`
+- [ ] `Heap`
+- [ ] `Priority_Queue`
+- [ ] `Forward_List`
+### 增加符合*C++ 11*规范的接口
+- [ ] `Vector`
+- [ ] `List`
+- [ ] `Deque`
+- [ ] `Stack`
+- [ ] `Queue`
+- [ ] `Heap`
+- [ ] `Priority_Queue`
+- [ ] `Forward_List`
+### *C++ 11*接口的单元测试
+- [ ] `Vector`
+- [ ] `List`
+- [ ] `Deque`
+- [ ] `Stack`
+- [ ] `Queue`
+- [ ] `Heap`
+- [ ] `Priority_Queue`
+- [ ] `Forward_List`
 ## 读书笔记
 ### `vector`
 &emsp; &emsp; `vector`的实现关键在于其对大小的控制以及重新配置时的数据移动效率。一旦`vector`旧有空间满载，如果客户端每新增一个元素，
