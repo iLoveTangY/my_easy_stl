@@ -49,9 +49,17 @@ STL 另外提供了`vector`、`list`、`deque`、`stack`、`queue`、`priority_q
 
 &emsp; &emsp; 为了符合 STL 的“前闭后开”区间的规范，SGI STL 在`list`的最后一个节点之后加上了一个空白节点。
 在实现`list`时，只要在`list`中保存一个指向这个空白节点的指针即可表示整个双向链表。`list`内部有一个`transfer()`操作，实质上就是将一段链表插到另一个链表中指定的位置之前。
+### `deque`
+&emsp; &emsp; `deque`是双向开口的连续线性空间，可以在头尾两端分别做元素的插入和删除操作。`deque`和`vector`的最大差异在于
+`deque`允许在常数时间内对**头端**元素进行插入操作，并且`deque`没有所谓容量的概念，因为它是以**分段连续**空间组合而成。
+对`deque`进行的排序操作，为了最高效率，可将`deque`完整复制到一个`vector`，将`vector`排序后，再复制回`deque`。
+
+&emsp; &emsp; `deque`采用一块所谓的*map*（不是STL里面的`map`容器）作为主控制中心。这个*map*是一小块连续空间，其中每个元素（称为一个节点，*node*）都是指针，
+指向另一端较大的线性连续空间，称为缓冲区。缓冲区才是`deque`的存储空间主体。
 ## 实现细节
 ### `Vector`
 &emsp; &emsp; `Vector`中注意`copy()`和`copy_backward()`的使用。`Vector`支持的所有操作如下：
+
 
 名称|描述
 :-:|:-:
@@ -102,6 +110,15 @@ STL 另外提供了`vector`、`list`、`deque`、`stack`、`queue`、`priority_q
 `merge(x)`|将链表`x`归并到当前链表，要求两个链表都有序
 `reverse()`|逆置链表
 `sort()`|链表排序
+
+### `deque`
+&emsp; &emsp; 仔细观察，可以发现`deque`的控制中心`map`实际上是一个`T**`（实际上`map`是一个指针数组），也就是说它是一个指针，所指之物也是一个指针，
+指向一块型别为`T`的空间（实际上是数组）。
+
+&emsp; &emsp; `deque`的迭代器的实现中有如下几个关键函数：`set_node(map_pointer new_node)`是一个辅助函数，在`deque`的迭代器前进或者后退时来辅助修改当前迭代器的`node`指针（`node`指针前进或者后退）。
+`operator-(const self& x)`用来计算两个迭代器之间的距离，要求`x`所指元素在`*this`之前，实现时先计算两个迭代器`node`的差值，再加上`x.last-x.cur`和`*this.cur-*this.first`即可。
+再就是在实现`operator++`、`operator--`、`operator+=`等运算符时要注意利用`set_node`设置迭代器指向新的控制中心节点。在实现`operator+=`时，用`offset`来表示从当前迭代器所在的缓冲区(`node`)开始到要跳转的位置的偏移量。
+用`node_offset`来表示`node`的偏移量。但是当`offset`为负数时应该先减一，表示从`cur`跳到下一个节点的尾部，然后在计算`node_offset`。
 
 ## 遇到的问题
 Q: 书上的代码在`Vector`的尾部插入元素时会有 **bug**？
