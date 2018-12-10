@@ -118,7 +118,31 @@ STL 另外提供了`vector`、`list`、`deque`、`stack`、`queue`、`priority_q
 &emsp; &emsp; `deque`的迭代器的实现中有如下几个关键函数：`set_node(map_pointer new_node)`是一个辅助函数，在`deque`的迭代器前进或者后退时来辅助修改当前迭代器的`node`指针（`node`指针前进或者后退）。
 `operator-(const self& x)`用来计算两个迭代器之间的距离，要求`x`所指元素在`*this`之前，实现时先计算两个迭代器`node`的差值，再加上`x.last-x.cur`和`*this.cur-*this.first`即可。
 再就是在实现`operator++`、`operator--`、`operator+=`等运算符时要注意利用`set_node`设置迭代器指向新的控制中心节点。在实现`operator+=`时，用`offset`来表示从当前迭代器所在的缓冲区(`node`)开始到要跳转的位置的偏移量。
-用`node_offset`来表示`node`的偏移量。但是当`offset`为负数时应该先减一，表示从`cur`跳到下一个节点的尾部，然后在计算`node_offset`。
+用`node_offset`来表示`node`的偏移量。但是当`offset`为负数时应该先减一，表示从`cur`跳到下一个节点的尾部，然后再计算`node_offset`。
+
+&emsp; &emsp; `deque`里面定义了两个专属空间配置器，一个用来配置元素，一个用来配置控制中心(map)。`deque`里面的属性主要有三个：`start`、`finish`和`map`。`map`指向控制中心，`start`为一个迭代器，指向第一个节点，
+`end`也是一个迭代器，指向最后一个节点之后的位置。注意，`deque`的`clear()`函数清除这个缓冲区，但是由于`deque`的最初状态保有一个缓冲区，因此，`clear()`完成之后回复初始状态，也一样要保留一个缓冲区。
+在`deque`的`erase()`函数中，为了提高速度，当清除点之前的元素个数较少时我们将清楚点之前的所有元素都往后移一位，覆盖掉清除点处的元素；如果清除点之后的元素个数较少，
+那我们就把清除点之后的所有元素往前移，覆盖掉清除点处的元素。清除区间元素时也是一样。`insert()`函数里也是如此，如果插入点之前的元素比较少，就把插入点之前的元素往前往前移一位；
+否则就把插入点之后的元素往后移一位（为了效率无所不用其极...）。`deque`的接口如下：
+
+名称|描述
+:-:|:-:
+`begin()`|指向第一个元素的迭代器
+`end()`|指向最后一个元素之后位置的迭代器
+`operator[]`|容器的下标操作符，调用迭代器的下标操作符
+`front()`|返回容器第一个元素
+`back()`|返回容器最后一个元素
+`size()`|返回容器元素个数
+`max_size()`|最大元素个数
+`empty()`|是否为空
+`push_back()`|在尾部插入一个元素
+`push_front()`|在头部插入一个元素
+`pop_back()`|弹出尾部元素
+`pop_front()`|弹出头部元素
+`clear()`|清空`deque`
+`erase()`|删除指定位置的元素
+`insert()`|在指定位置插入元素
 
 ## 遇到的问题
 Q: 书上的代码在`Vector`的尾部插入元素时会有 **bug**？
@@ -128,3 +152,7 @@ A: 在尾部插入时单独处理。
 Q: `list`的后缀`operator++()`为什么返回`const`？
 
 A: 返回常量是为了避免写出`(x++)++`这样的代码，参考[这里](https://stackoverflow.com/questions/52871026/overloaded-operator-returns-a-non-const-and-clang-tidy-complains)。
+
+Q: `deque`的`max_size()`函数实现为`size_type(-1)`是否表示无符号数的最大值？
+
+A: \TODO
