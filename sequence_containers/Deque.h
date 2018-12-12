@@ -6,7 +6,9 @@
 #define EASY_STL_DEQUE_H
 
 #include <cstddef>
+#include <easy_stl_uninitialized.h>
 #include "easy_stl_iterator.h"
+#include "easy_stl_alloc.h"
 
 namespace easy_stl
 {
@@ -160,6 +162,88 @@ namespace easy_stl
             return (node == x.node) ? (cur < x.cur) : (node < x.node);
         }
     };
+
+    template <typename T, typename Alloc=MoreEfficientAlloc, size_t BufSize=0>
+    class Deque
+    {
+    public:
+        typedef T value_type;
+        typedef value_type * pointer;
+        typedef size_t size_type;
+        typedef T& reference;
+        typedef ptrdiff_t difference_type;
+        typedef __Deque_iterator<T, T&, T*, BufSize> iterator;
+
+        Deque(int n, const value_type& value) : start(), finish(), map(nullptr), map_size(0)
+        {
+            fill_initialize(n, value);
+        }
+
+        iterator begin()
+        {
+            return start;
+        }
+
+        iterator end()
+        {
+            return finish;
+        }
+
+        reference operator[](size_type n)
+        {
+            return start[difference_type(n)];
+        }
+
+        reference front()
+        {
+            return *start;
+        }
+
+        reference back()
+        {
+            return *(finish-1);
+        }
+
+        size_type size() const
+        {
+            return static_cast<size_type>(finish - start);
+        }
+
+        size_type max_size() const
+        {
+            return static_cast<size_type>(-1);
+        }
+
+        bool empty() const
+        {
+            return finish == start;
+        }
+
+    private:
+        typedef pointer *map_pointer;
+        typedef simple_alloc<value_type, Alloc> data_allocator;
+        typedef simple_alloc<pointer, Alloc> map_allocator;
+
+        iterator start; // 第一个节点
+        iterator finish;    // 最后一个节点之后的节点
+        map_pointer map;    // 指向控制中心的指针
+        size_type map_size; // map内有多少指针，即控制中心的大小
+
+        void fill_initialize(size_type n, const value_type &value);
+        void create_map_and_nodes(size_type num_elements);
+        pointer allocate_node();
+    };
+
+    template<typename T, typename Alloc, size_t BufSize>
+    void Deque<T, Alloc, BufSize>::fill_initialize(Deque::size_type n, const value_type &value)
+    {
+        create_map_and_nodes(n);
+        map_pointer cur;
+        for (cur = start.node; cur < finish.node; ++cur)
+            uninitialized_fill(*cur, *cur+iterator::buffer_size(), value);
+        // 最后一个节点的设置稍有不同，因为尾端可能有备用空间，不必设初值
+        uninitialized_fill(finish.first, finish.cur, value);
+    }
 }
 
 #endif //EASY_STL_DEQUE_H
